@@ -156,36 +156,28 @@ function Drama(){
 }
 
 
-function DramaLay(){
+class DramaLay extends React.Component{
 
-    const [state,setState] = useState(
-        {
-            length: 9,
-            array: Array(9).push("dsd"),
-        }
-    );
+
+    render(){
+    const n = 12;
+    const makeComponents = [...Array(n)].map((e,i) =>{
+        return <Drama />
+    })
+    
     
 
     return(
-        <div className="drama-lay">
-            <div className="empty-lay">
-                <div className="row-header"></div>
+            <div className="drama-lay">
+                <div className="empty-lay">
+                    <div className="row-header"></div>
+                </div>
+                <div className="drama-row">
+                    {makeComponents}
+                </div>
             </div>
-            <div className="drama-row">
-                <Drama/>
-                <Drama/>
-                <Drama/>
-                <Drama/>
-                <Drama/>
-                <Drama/>
-                <Drama/>
-                <Drama/>
-                <Drama/>
-                <Drama/>
-                <Drama/>
-            </div>
-        </div>
-    );
+        );
+    }
 }
 
 
