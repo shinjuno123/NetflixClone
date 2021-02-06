@@ -85,7 +85,7 @@ class Navi extends React.Component{
 
 function DramaImage(){
     const [dimensions,setDimenstions] = React.useState({
-        height: window.innerWidth *0.5625,
+        height: window.innerWidth *0.48,
         width: window.innerWidth-50
     })
 
@@ -93,7 +93,7 @@ function DramaImage(){
 
         function handleResize(){
             setDimenstions({
-                height:window.innerWidth *0.5625,
+                height:window.innerWidth *0.48,
                 width: window.innerWidth-50
             })
         }
@@ -145,44 +145,113 @@ function Description(){
     );
 }
 
+function MovieSlider(props){
 
-function Drama(){
+    const [state,setState]=React.useState(
+        {
+            width:window.innerWidth,
+            height:window.innerHeight,
+            src: "https://occ-0-395-988.1.nflxso.net/dnm/api/v6/X194eJsgWBDE2aQbaNdmCXGUP-Y/AAAABR2YTuQpIDhSXGf-oG9Hkm_xi18oLJ1CENwr0x_kQFpBm8VMkdRTHdNR2lmaMFg3YfbXU29H_zNUefJ28ew9h0FLMHo.webp?r=d2b"
+        }
+    )
+    
+    React.useEffect(()=>{
+
+        function handleResize(){
+            setState({
+                height:window.innerHeight,
+                width: window.innerWidth,
+                src:state.src,
+                
+            })
+        }
+        window.addEventListener('resize',handleResize);
+
+        return () =>{
+            window.removeEventListener('resize',handleResize);
+        }
+    })
+
+    
+    const makeListOfVideos = [...Array(props.indexCount)].map(()=>{
+            return(
+                <li><img style={{width:state.width/6 - 27 +"px",height:(state.width/6-30)*0.6 +"px"}} src={state.src}/></li>
+            )
+        })
+       
+    
     return(
-        <div className="drama">
-            <div className="video"></div>
-            <div className="video-gage"></div>
+        <div className="slider" style={{width:state.width}}>
+            <span className="slider-title">신준호{props.moveLeft}</span>
+            <div className="slide-wrapper" id="slide-wrapper" style={{width:state.width,height:(state.width/6-30)*0.6+30 +"px"}}>
+                <ul className="slides" >
+                    {makeListOfVideos}
+                </ul>
+            </div>
+        </div>
+    );//style={{left:`-${state.width - 27}px`}}
+}
+
+function MoviesliderButton(props){
+
+    const [state,setState] = React.useState({
+        width:window.innerWidth,
+        height:window.innerHeight,
+        clientHeight:(window.innerWidth/6-30)*0.6+15,
+    });
+
+    
+
+    React.useEffect(()=>{
+        function handleResize(){
+
+            setState({
+                height:window.innerHeight,
+                width: window.innerWidth,
+                clientHeight:(window.innerWidth/6-30)*0.6+15,
+            })
+           
+        }
+        window.addEventListener('resize',handleResize);
+        console.log(`translateY(${state.clientHeight})`);
+        return () =>{
+            window.removeEventListener('resize',handleResize);
+        }
+    })
+
+    return(
+        <div>
+            <button onClick={props.onClick} style={{transform: `translateY(-${state.clientHeight}px)`,height:`${state.clientHeight-12}px`}} className="move-left"></button>
+            <button style={{left:state.width-78+"px",transform: `translateY(-${state.clientHeight}px)`,height:`${state.clientHeight-12}px`}} className="move-right"></button>
         </div>
     );
 }
 
 
-class DramaLay extends React.Component{
-
-
-    render(){
-    const n = 12;
-    const makeComponents = [...Array(n)].map((e,i) =>{
-        return <Drama />
-    })
-    
-    
-
-    return(
-            <div className="drama-lay">
-                <div className="empty-lay">
-                    <div className="row-header"></div>
-                </div>
-                <div className="drama-row">
-                    {makeComponents}
-                </div>
-            </div>
-        );
-    }
-}
 
 
 class Main extends React.Component{
+    constructor(props){
+        super(props);
+        this.state={
+            width:window.innerWidth,
+            height:window.innerHeight,
+            currentIdx:1,
+        }
+        this.ClickMovieSlider = this.ClickMovieSlider.bind(this);
+    }
+
+    ClickMovieSlider(){
+        // console.log("클릭");
+        
+        this.setState({
+            currentIdx:this.state.currentIdx+1,
+        })
+
+    }
+
     render(){
+        console.log("width : "+this.state.width/2 +" , " + this.state.width/2)
         return(
             <div className="total-screen">
                 <header>
@@ -195,9 +264,11 @@ class Main extends React.Component{
                         <div className="empty"></div>
                         <div className="age-limit"><div className="label"><div className="age">15+</div></div></div>
                     </div> 
-                    
                 </div>
-                <DramaLay/>
+                <MovieSlider moveLeft={this.state.currentIdx} indexCount={12}/>
+                <MoviesliderButton onClick={this.ClickMovieSlider}/>
+                <MovieSlider/>
+                <MoviesliderButton onClick={this.ClickMovieSlider}/>
                 <footer>
 
                 </footer>
@@ -207,7 +278,7 @@ class Main extends React.Component{
         );
     }
 }
-
+//<button className="move-right"></button>
 
 
 ReactDOM.render(
