@@ -305,15 +305,19 @@ small{
     height: fit-content;
     color: #ffffff;
     z-index: 3;
-    margin-top: 110px;
+    /* background-color: aquamarine; */
+    /* transform: translateY(110px); */
 }
 .slider-title{
     margin-left: 60px;
+    font-size: 23px;
+    font-weight: bold;
 }
 
 .slide-wrapper{
     position: relative;
     margin: 0 auto;
+    /* background-color: aquamarines; */
     overflow:hidden;    
     display: flex;
 }
@@ -323,6 +327,7 @@ small{
     display: flex;
     height: fit-content;
     padding-left: 0;
+    transition: left 2s ease-out;
     margin-left: 60px;
 }
 .slides li{

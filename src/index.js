@@ -108,7 +108,6 @@ function DramaImage(){
 
 
     return(
-        console.log(dimensions.height + " , " + dimensions.width),
         <div style={{width:dimensions.width,height:dimensions.height}} className="drama-image"/>
     );
     
@@ -125,8 +124,6 @@ function Description(){
     });
 
 
-
-    console.log(state.description);
     return(
         <div className="contents-box">
             <div className="right-side">
@@ -151,22 +148,23 @@ function MovieSlider(props){
         {
             width:window.innerWidth,
             height:window.innerHeight,
-            src: "https://occ-0-395-988.1.nflxso.net/dnm/api/v6/X194eJsgWBDE2aQbaNdmCXGUP-Y/AAAABR2YTuQpIDhSXGf-oG9Hkm_xi18oLJ1CENwr0x_kQFpBm8VMkdRTHdNR2lmaMFg3YfbXU29H_zNUefJ28ew9h0FLMHo.webp?r=d2b"
+            src: "https://occ-0-395-988.1.nflxso.net/dnm/api/v6/X194eJsgWBDE2aQbaNdmCXGUP-Y/AAAABR2YTuQpIDhSXGf-oG9Hkm_xi18oLJ1CENwr0x_kQFpBm8VMkdRTHdNR2lmaMFg3YfbXU29H_zNUefJ28ew9h0FLMHo.webp?r=d2b",
+            currentIdx:0,
+            marginTop:120,
         }
     )
     
     React.useEffect(()=>{
-
+        console.log("prop key = "+props.Ckey);
+        decideKey(props.Ckey);
         function handleResize(){
             setState({
                 height:window.innerHeight,
                 width: window.innerWidth,
                 src:state.src,
-                
             })
         }
         window.addEventListener('resize',handleResize);
-
         return () =>{
             window.removeEventListener('resize',handleResize);
         }
@@ -175,16 +173,38 @@ function MovieSlider(props){
     
     const makeListOfVideos = [...Array(props.indexCount)].map(()=>{
             return(
-                <li><img style={{width:state.width/6 - 27 +"px",height:(state.width/6-30)*0.6 +"px"}} src={state.src}/></li>
+                <li><img style={{width:state.width/6 - 27 +"px",height:(state.width/6-30)*0.57 +"px"}} src={state.src}/></li>
             )
-        })
+        });
        
     
+
+    const decideKey = (key)=>{
+        console.log("key = "+ key);
+        setState({
+            height:window.innerHeight,
+            width: window.innerWidth,
+            src:state.src,
+            currentIdx:props.currentIdx[key],
+            marginTop:102,
+        })
+        if(key != 0){
+            setState({
+                height:window.innerHeight,
+                width: window.innerWidth,
+                src:state.src,
+                currentIdx:props.currentIdx[key],
+                marginTop:22,
+            })
+        }
+    }
+
     return(
-        <div className="slider" style={{width:state.width}}>
-            <span className="slider-title">신준호{props.moveLeft}</span>
+        <div className="slider" style={{width:state.width,marginTop:state.marginTop + "px"}}>
+            
+            <span className="slider-title">{props.title}</span>
             <div className="slide-wrapper" id="slide-wrapper" style={{width:state.width,height:(state.width/6-30)*0.6+30 +"px"}}>
-                <ul className="slides" >
+                <ul className="slides" style={{left:"-"+((state.currentIdx)*(state.width-137)) + "px"}} >
                     {makeListOfVideos}
                 </ul>
             </div>
@@ -213,7 +233,6 @@ function MoviesliderButton(props){
            
         }
         window.addEventListener('resize',handleResize);
-        console.log(`translateY(${state.clientHeight})`);
         return () =>{
             window.removeEventListener('resize',handleResize);
         }
@@ -221,8 +240,8 @@ function MoviesliderButton(props){
 
     return(
         <div>
-            <button onClick={props.onClick} style={{transform: `translateY(-${state.clientHeight}px)`,height:`${state.clientHeight-12}px`}} className="move-left"></button>
-            <button style={{left:state.width-78+"px",transform: `translateY(-${state.clientHeight}px)`,height:`${state.clientHeight-12}px`}} className="move-right"></button>
+            <button onClick={props.LonClick} style={{transform: `translateY(-${state.clientHeight}px)`,height:`${state.clientHeight-19}px`}} className="move-left"></button>
+            <button  onClick={props.RonClick} style={{left:state.width-78+"px",transform: `translateY(-${state.clientHeight}px)`,height:`${state.clientHeight-19}px`}} className="move-right"></button>
         </div>
     );
 }
@@ -236,22 +255,41 @@ class Main extends React.Component{
         this.state={
             width:window.innerWidth,
             height:window.innerHeight,
-            currentIdx:1,
+            currentIdx: Array(12).fill(0),
+            buttonCount: 12,
+            titles:["신준호 님이 시청 중인 콘텐츠","Netflix 인기 콘텐츠"],
         }
-        this.ClickMovieSlider = this.ClickMovieSlider.bind(this);
+        this.RClickMovieSlider = this.RClickMovieSlider.bind(this);
+        this.LClickMovieSlider = this.LClickMovieSlider.bind(this);
     }
 
-    ClickMovieSlider(){
-        // console.log("클릭");
-        
+    RClickMovieSlider(idx){
+        const currentIdx = this.state.currentIdx.slice();
+        if(currentIdx[idx] < this.state.buttonCount/6-1){
+            currentIdx[idx] += 1; 
+        }else{
+            currentIdx[idx] = 0;
+        }
         this.setState({
-            currentIdx:this.state.currentIdx+1,
+            currentIdx: currentIdx,
+        })
+
+    }
+
+    LClickMovieSlider(idx){
+        const currentIdx = this.state.currentIdx.slice();
+        if(currentIdx[idx] > 0){
+            currentIdx[idx] -= 1; 
+        }else{
+            currentIdx[idx] = this.state.buttonCount/6-1;
+        }
+        this.setState({
+            currentIdx: currentIdx,
         })
 
     }
 
     render(){
-        console.log("width : "+this.state.width/2 +" , " + this.state.width/2)
         return(
             <div className="total-screen">
                 <header>
@@ -265,10 +303,10 @@ class Main extends React.Component{
                         <div className="age-limit"><div className="label"><div className="age">15+</div></div></div>
                     </div> 
                 </div>
-                <MovieSlider moveLeft={this.state.currentIdx} indexCount={12}/>
-                <MoviesliderButton onClick={this.ClickMovieSlider}/>
-                <MovieSlider/>
-                <MoviesliderButton onClick={this.ClickMovieSlider}/>
+                <MovieSlider title={this.state.titles[0]} Ckey={0} currentIdx={this.state.currentIdx} indexCount={this.state.buttonCount}/>
+                <MoviesliderButton LonClick={()=>this.LClickMovieSlider(0)} RonClick={()=>this.RClickMovieSlider(0)}/>
+                <MovieSlider title={this.state.titles[1]} Ckey={1} currentIdx={this.state.currentIdx} indexCount={this.state.buttonCount}/>
+                <MoviesliderButton LonClick={()=>this.LClickMovieSlider(1)} RonClick={()=>this.RClickMovieSlider(1)}/>
                 <footer>
 
                 </footer>
